@@ -1,0 +1,38 @@
+@echo off
+setlocal
+if %_cwd ne c:\temp cdd c:\temp
+
+iftp ftp://jpsoft.com
+
+*copy /ug ftp:/help/jphelp.chm
+ 
+do app in /l 4nt tcmd
+   *copy /g ftp:/%app/%app.exe
+   iff %_? eq 0 then
+      gosub unpack %app
+      *del /q %app.exe
+      *copy /ug ftp:/%app/inikey/%app.exe
+      *move %app.exe %app
+   endiff
+enddo
+
+iftp /q
+
+endlocal
+quit 0
+
+:unpack [prog] 
+   if not isdir %prog md %prog
+   pushd %prog
+   \utils\innounp\innounp -x ..\%prog.exe
+   iff %? eq 0 .and. isdir {app} then
+      *del /q install_script.iss
+      pushd {app}
+      ren "language,1.dll" "Language.DLL"
+      del /q "language,?.dll"
+      popd
+      *move {app}\* .
+      rd {app}
+   endiff
+   popd
+return

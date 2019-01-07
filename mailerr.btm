@@ -1,0 +1,58 @@
+@echo off
+::this batch is an 'error wrapper' for running unattended via CRON
+DELAY /M %@RANDOM[100,500]
+TITLE %@name[%1]
+WINDOW MIN
+
+iff %# ge 1 then
+
+   if not defined stderrto set stderrto=stderr@carterenergy.com
+   if not defined stderrsub set stderrsub=Standard Error
+   set stderr=%@UNIQUE[%temp]
+
+   ::make sure we're mapped to the N: drive
+   iff %@remote[n:] eq 0 then
+      net use n: \\carterenergy\dfs
+      echoerr %?
+   endiff
+
+   ::find the command to run
+   do argno = 1 to %#
+      switch %@which[%[%argno]]
+      case 1 .or. 2
+         %[%argno&] >>&> %stderr
+         set stderrfrom=%[%argno]
+      case 3
+         %[%argno&] >>&> %stderr
+         iff %@filename[%[%argno]] eq perl then
+            set stderrfrom=%@filename[%[%@eval[%argno + 1]]]
+         else
+            set stderrfrom=%@filename[%[%argno]]
+         endiff
+      case 4
+         call %[%argno&] >>&> %stderr
+         set stderrfrom=%@name[%[%argno]]
+      default
+         set stderrfrom=mailerr
+         echo mailerr:"%[%argno]" is an invalid command >> %stderr
+      endswitch
+
+      iff %@filesize[%stderr] gt 5 then
+         blat "%stderr" -to "%stderrto" -f "%stderrfrom@%_HOST" -s "%stderrsub"
+      endiff
+      leave
+   enddo
+
+   if exist %stderr *del /q %stderr
+
+   unset stderr
+   unset stderrto
+   unset stderrfrom
+   unset stderrsub
+
+else
+   echoerr No arguments.
+endiff
+
+:end
+quit 0

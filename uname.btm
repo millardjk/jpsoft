@@ -1,0 +1,28 @@
+@echo off
+gosub uname "%&"
+echo %UName
+unset uname
+quit
+
+:uname [argument]
+   set arg=%@dequote[%argument]
+   iff exist "%arg" then
+      setlocal
+
+      set myPath=%@PATH["%arg"]
+      set myName=%@NAME["%arg"]
+      set myExt=%@EXT["%arg"]
+
+      set rev=1
+      set uname=%myPath%%myName-1%@if[defined myExt,.%myExt]
+      do while exist "%uname"
+         set rev=%@INC[%rev]
+         set uname=%myPath%%myName-%rev%%@if[defined myExt,.%myExt]
+      enddo
+
+      endlocal uname
+   else
+      set UName=%arg
+   endiff
+return
+

@@ -1,0 +1,6 @@
+sci*te =c:\utils\scite\scite.exe
+unzip= "C:\Program Files\7-Zip\7z.exe" x
+un7= "c:\program files\7-zip\7z.exe" x
+vmkfstools= "C:\Program Files (x86)\VMware\VMware Workstation\vmware-vdiskmanager.exe"
+7z= "c:\program files\7-zip\7z.exe" a -mx=9
+7zx="c:\program files\7-zip\7z.exe" a -mx=9 -sfx7z.sfx

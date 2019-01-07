@@ -1,0 +1,91 @@
+@echo off
+
+::Synchronize the installation
+set ShellPath=%@RTRIM["\",%@PATH[%_CMDSPEC]]
+::synchronized copies are found here (if the network is available)
+set netpath=n:\utils\jpsoft\shared
+
+iff %@ready[%@left[2,%netpath]] eq 1 THEN
+   ::startup batch file
+   set timestamp=%@fileage[%_BATCHNAME]
+   gosub syncfile %netpath %shellpath %@filename[%_BATCHNAME]
+
+   ::re-source the startfile if we updated it from the network
+   :: note that this does NOT use the "call" syntax: we want a complete reload
+   if %timestamp ne %@fileage[%_BATCHNAME] %_BATCHNAME
+   if defined timestamp unset timestamp
+
+   ::functions
+   gosub syncfile %netpath %shellpath functions
+
+   ::"global" aliases
+   gosub syncfile %netpath %shellpath aliases
+
+   ::"network" aliases--only attempt to synchronize if they exist locally
+   iff exist %shellpath\aliases.net then
+      gosub syncfile %netpath %shellpath aliases.net
+   endiff
+
+   ::"local" aliases--only attempt to synchronize if they exist locally
+   iff exist %shellpath\aliases.local then
+      gosub syncfile %netpath %shellpath aliases.local
+   endiff
+
+   ::"local" btm files that serve utility purposes
+   do file in /[!4start.btm,tcstart.btm,examples.btm] %netpath\*.btm
+      gosub syncfile %netpath %shellpath %@filename[%file]
+   enddo
+
+endiff
+
+::load functions and aliases
+if exist %shellpath\functions function /r %shellpath\functions
+if exist %shellpath\aliases alias /r %shellpath\aliases
+if exist %netpath\aliases.net alias /r %netpath\aliases.net
+if exist %shellpath\aliases.local alias /r %shellpath\aliases.local
+
+if defined netpath unset netpath
+
+::Only load the SHRALIAS module if the shell is running on a local drive,
+iff %@remote[%shellpath] eq 0 then
+   if %_shralias lt 1 shralias
+endiff
+
+iff not defined username then
+    PROMPT `$+[$P]%@if[%@LEN[%_CWD] GT 25,$_,]%@if[%_elevated,#,$]$s`
+else
+    PROMPT `$+[%username%%@if[%_elevated,#,@]$P]%@if[%@LEN[%_CWD] GT 25,$_:$s,]`
+endiff
+
+::Make the title bar show the build number
+iff %_transient eq 0 then
+   setlocal
+      title %@field["-",0,%_wintitle] (%_4ver.%_build)
+   endlocal
+endiff
+
+:end
+quit 0
+
+:syncfile [rpath lpath file]
+   iff exist %rpath\%file then
+      set handle=%@fileopen[%lpath\%file,a]
+      iff %handle ne -1 then
+         set writable=1
+         echo %@fileclose[%handle] > nul
+		 if %@FILESIZE[%lpath\%file] eq 0 del /q %lpath\%file
+      else
+         set writable=0
+      endiff
+      if (%writable ne 0 .and. %@FILESIZE[%rpath\%file] gt 0) *copy /q /u %rpath\%file %lpath
+
+      set handle=%@fileopen[%rpath\%file,a]
+      iff %handle ne -1 then
+         set writable=1
+         echo %@fileclose[%handle] > nul
+      else
+         set writable=0
+      endiff
+      if (%writable ne 0 .and. %@FILESIZE[%lpath\%file] gt 0) *copy /q /u %lpath\%file %rpath
+   endiff
+return

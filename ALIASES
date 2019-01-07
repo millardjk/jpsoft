@@ -1,0 +1,32 @@
+-=*cdd -
+..*.........=*%0\
+.=`explorer /e,.`
+copy     = *copy /GR
+cp       = copy
+ddir     = dir /a:d /t
+debug    = *bdebugger
+dir      = *dir /p/o:gen
+e*dit	 = notepad
+explore  = `explorer.exe /e,%@IF[%# gt 0,%&,.]`
+fc       = *fc /n
+ffind    = *ffind /v
+l*s      = *dir /p/t/o:gen/a:
+latest   = \\home\dfs\utils\jpsoft\shared\getlatest.btm
+logout   = shutdown /l
+mach*ine = `net view %@IF[%# gt 0,| *ffind /k/m/v/t"%1"]`
+mailerr  = %shellpath\mailerr.btm %&
+more     = list
+move     = *move /GR
+mv       = move
+rm       = del
+s        = %&
+select   = *select /o:gen
+sendmail = `pushd %+ *sendmail %& %+ popd`
+uname    = %@path[%_cmdspec]uname.btm %&
+unzip    = \\home\dfs\utils\7-zip\4.32\7za.exe x
+update   =%shellpath\updater /checknow
+updatenow=start %shellpath\updater /checknow %+ shralias /u %+ exit
+uptime   = systeminfo | find "System Up Time"
+vi       = edit
+vnc      = c:\utils\vnc\vncviewer DisableWinKeys=0
+zip      = \\home\dfs\utils\7-zip\4.32\7za.exe a -tzip -mx=9

@@ -1,0 +1,5 @@
+setdef  =%@IF[defined %1,%[%1],%@exec[@set %1=%2]%2]
+which   =%@exec[@set _which=%@left[1,%@word[3,%@execstr[which %1]]]]%@if[%_which eq i,1,%@if[%_which eq a,2,%@if[%_which eq e,3,%@if[%_which eq b,4,%@if[%_which eq u,-1,0]]]]]%+unset _which
+uname   =%@execstr[uname %&]
+dequote =%@replace[%=",``,%&]
+isadmin =%@WINAPI["shell32.dll","IsUserAnAdmin"]
