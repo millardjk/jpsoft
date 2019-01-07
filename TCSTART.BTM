@@ -52,9 +52,9 @@ iff %@remote[%shellpath] eq 0 then
 endiff
 
 iff not defined username then
-    PROMPT `$+[$P]%@if[%@LEN[%_CWD] GT 25,$_,]%@if[%_elevated,#,$]$s`
+   PROMPT `$+[$P]%@if[%@LEN[%_CWD] GT 25,$_,]%@if[%_elevated,#,$]$s`
 else
-    PROMPT `$+[%username%%@if[%_elevated,#,@]$P]%@if[%@LEN[%_CWD] GT 25,$_:$s,]`
+   PROMPT `$+[%username%%@if[%_elevated,#,@]$P]%@if[%@LEN[%_CWD] GT 25,$_:$s,]`
 endiff
 
 ::Make the title bar show the build number
@@ -73,7 +73,7 @@ quit 0
       iff %handle ne -1 then
          set writable=1
          echo %@fileclose[%handle] > nul
-		 if %@FILESIZE[%lpath\%file] eq 0 del /q %lpath\%file
+         if %@FILESIZE[%lpath\%file] eq 0 del /q %lpath\%file
       else
          set writable=0
       endiff
@@ -83,6 +83,7 @@ quit 0
       iff %handle ne -1 then
          set writable=1
          echo %@fileclose[%handle] > nul
+         if %@FILESIZE[%rpath\%file] eq 0 del /q %rpath\%file
       else
          set writable=0
       endiff
